@@ -1,0 +1,15 @@
+output/
+alarm/
+.*
+!/.gitignore
+
+
+*.mp4
+__pycache__/
+
+*.log
+
+cfg/yolov3.weights
+config.json
+
+*.jpg

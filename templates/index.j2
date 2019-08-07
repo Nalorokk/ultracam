@@ -1,0 +1,11 @@
+<h1>Ultracam alpha</h1>
+processed images: {{processed}}<br>
+avg time: {{avg}}<br>
+total time: {{total}}<br>
+stream resets: {{stream_resets}}<br>
+framebuffer size: {{size}} kb<br>
+
+{% for k, v in images.items() %}
+<p>{{k}}: </p><br>
+<img src="/snapshot/{{k}}" />
+{% endfor %}

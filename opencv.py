@@ -14,7 +14,7 @@ import shared
 from pprint import pprint
 
 classes = None
-allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant']
+allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant', 'train', 'bus']
 
 with open(shared.args.classes, 'r') as f:
     classes = [line.strip() for line in f.readlines()]
@@ -78,14 +78,40 @@ def perform_alarm(name, image, alarm, silent):
         caption = 'type: alarm\n' + caption
 
     msgId = -330196658
-    bot.send_photo(chat_id=msgId, photo=open(path, 'rb'), caption = caption, disable_notification = silent)
+    try:
+    	bot.send_photo(chat_id=msgId, photo=open(path, 'rb'), caption = caption, disable_notification = silent)
+
+    except:
+    	shared.logger.debug('Telegram error happened')
 
 
+def get_image_difference(image_1, image_2):
+        first_image_hist = cv2.calcHist([image_1], [0], None, [256], [0, 256])
+        second_image_hist = cv2.calcHist([image_2], [0], None, [256], [0, 256])
+
+        img_hist_diff = cv2.compareHist(first_image_hist, second_image_hist, cv2.HISTCMP_BHATTACHARYYA)
+        img_template_probability_match = cv2.matchTemplate(first_image_hist, second_image_hist, cv2.TM_CCOEFF_NORMED)[0][0]
+        img_template_diff = 1 - img_template_probability_match
+
+        # taking only 10% of histogram diff, since it's less accurate than template method
+        commutative_image_diff = (img_hist_diff / 10) + img_template_diff
+        return commutative_image_diff
 
 def detect(stream):
     name = stream['label']
+    name2 = name+'_processed'
     image = shared.framebuffer[name]
-        
+
+    if name2 in shared.framebuffer:
+        commutative_image_diff = get_image_difference(shared.framebuffer[name], shared.framebuffer[name2])
+        pprint(commutative_image_diff)
+
+        if(commutative_image_diff < 0.004):
+            pprint("skipping frame")
+            return None
+
+    shared.framebuffer[name2] = image
+
     Width = image.shape[1]
     Height = image.shape[0]
     scale = 0.00392
@@ -194,12 +220,17 @@ def processFrame():
                 begin = time.time()
 
                 framed = detect(stream)
-                shared.framebuffer[stream['label'] + '_framed'] = framed
+                if framed is not None:
+                    shared.framebuffer[stream['label'] + '_framed'] = framed
 
-                took = time.time() - begin
+                    took = time.time() - begin
 
-                shared.increase_counter('images_processed')
-                shared.increase_counter('images_time', took)
-                shared.logger.debug('detection tooks: '+str(took)+' seconds')
+                    shared.increase_counter('images_processed')
+                    shared.increase_counter('images_time', took)
+                    shared.logger.debug('detection tooks: '+str(took)+' seconds')
+                else:
+                    took = time.time() - begin
+                    shared.increase_counter('images_skipped')
+                    shared.increase_counter('skipped_time', took)
             
-        time.sleep(1)
+        time.sleep(0.5)

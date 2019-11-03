@@ -24,7 +24,7 @@ app = Sanic()
 
 @app.route("/")
 async def mainList(request):
-    return template('index.j2', images = shared.framebuffer, processed = shared.get_counter('images_processed'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
+    return template('index.j2', images = shared.framebuffer, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
 
 @app.route('/snapshot/<tag>')
 async def tag_handler(request, tag):

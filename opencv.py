@@ -105,9 +105,12 @@ def detect(stream):
     if name2 in shared.framebuffer:
         commutative_image_diff = get_image_difference(shared.framebuffer[name], shared.framebuffer[name2])
         pprint(commutative_image_diff)
+        shared.increase_counter("total_diff", commutative_image_diff)
+        shared.increase_counter("total_processed")
+        shared.add_framestat(name, commutative_image_diff)
 
         if(commutative_image_diff < 0.0025):
-            shared.increase_counter("total_diff", commutative_image_diff)
+            shared.increase_counter("total_skip_diff", commutative_image_diff)
             pprint("skipping frame")
             return None
 

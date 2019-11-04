@@ -1,0 +1,7 @@
+graph_title Ultracam Average Movement
+graph_vlabel Movement
+graph_category sensors
+{% for k, v in stats.items() %}
+{{k}}.label {{k}}
+{{k}}.value {{v * 1000}}
+{% endfor %}

@@ -1,7 +1,13 @@
 from __future__ import print_function
+
+import os
+import time
 from sys import getsizeof, stderr
 from itertools import chain
 from collections import deque
+
+#import psutil as psutil
+
 try:
     from reprlib import repr
 except ImportError:
@@ -56,6 +62,7 @@ def total_size(o, handlers={}, verbose=False):
 
 framebuffer = {}
 stats = {}
+frame_stats = {}
 
 
 ap = argparse.ArgumentParser()
@@ -97,9 +104,17 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 sys.excepthook = handle_exception
 
+def add_framestat(name, stat):
+    stats = []
+    if(name in frame_stats):
+        stats = frame_stats[name]
 
+    stats.append({'time': time.time(), 'stat': stat})
+    frame_stats[name] = stats
 
 def get_size():
+    #process = psutil.Process(os.getpid())
+    #return process.memory_info().rss / 1024 / 1024
     return total_size(framebuffer) / 1024
 
 def get_counter(name):

@@ -29,11 +29,17 @@ app = Sanic()
 async def mainList(request):
     return template('index.j2', images = shared.framebuffer, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), diff_avg = shared.get_counter('total_skip_diff') / shared.get_counter('images_skipped'), diff_avg2 = shared.get_counter('total_diff') / shared.get_counter('total_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
 
+@app.route("/video/<tag>")
+async def mainList(request, tag):
+    return template('video.j2', tag = tag)
+
+
+
 @app.route('/snapshot/<tag>')
 async def tag_handler(request, tag):
     if(tag in shared.framebuffer):
         _, jpg = cv2.imencode('.jpg', shared.framebuffer[tag])
-        return response.raw(jpg, content_type='image/jpeg')
+        return response.raw(jpg, content_type='image/jpeg', headers={'Cache-Control': 'no-store'})
     else:
         return response.html('No image')
 

@@ -1,0 +1,13 @@
+<p>Video {{tag}}: </p><br>
+<img src="/snapshot/{{tag}}" class="video" />
+
+<script type="text/javascript">
+	function getRandomInt(max) {
+	  return Math.floor(Math.random() * Math.floor(max));
+	}
+
+  setInterval(function() {
+  	var image = document.getElementsByClassName("video")[0];
+  	image.src = "/snapshot/{{tag}}#"+getRandomInt(10000);
+  }, 100);
+</script> 

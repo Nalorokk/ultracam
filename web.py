@@ -24,9 +24,11 @@ def template(tpl, **kwargs):
 
 app = Sanic()
 
+app.static('/static', './static')
 
 @app.route("/")
 async def mainList(request):
+
     return template('index.j2', images = shared.framebuffer, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), diff_avg = shared.get_counter('total_skip_diff') / shared.get_counter('images_skipped'), diff_avg2 = shared.get_counter('total_diff') / shared.get_counter('total_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
 
 @app.route("/video/<tag>")

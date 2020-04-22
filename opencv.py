@@ -14,7 +14,7 @@ import shared
 from pprint import pprint
 
 classes = None
-allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant', 'train', 'bus']
+allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant', 'train', 'bus', 'bowl', 'cup']
 
 with open(shared.args.classes, 'r') as f:
     classes = [line.strip() for line in f.readlines()]

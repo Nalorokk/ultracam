@@ -28,12 +28,15 @@ app.static('/static', './static')
 
 @app.route("/")
 async def mainList(request):
-
-    return template('index.j2', images = shared.framebuffer, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), diff_avg = shared.get_counter('total_skip_diff') / shared.get_counter('images_skipped'), diff_avg2 = shared.get_counter('total_diff') / shared.get_counter('total_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
+    filtered = {}
+    for (k, v) in shared.framebuffer.items():
+        if "_"  not in k:
+            filtered[k] = v
+    return template('index.html', images = filtered, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), diff_avg = shared.get_counter('total_skip_diff') / shared.get_counter('images_skipped'), diff_avg2 = shared.get_counter('total_diff') / shared.get_counter('total_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
 
 @app.route("/video/<tag>")
 async def mainList(request, tag):
-    return template('video.j2', tag = tag)
+    return template('video.html', tag = tag)
 
 
 
@@ -73,7 +76,7 @@ async def mainList(request):
         result[k] = diff / frames
 
 
-    return template('munin.j2', stats = result)
+    return template('munin.html', stats = result)
 
 
 def begin():

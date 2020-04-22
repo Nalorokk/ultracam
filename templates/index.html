@@ -14,7 +14,7 @@
 
 
     <div class="container">
-    <div class="row">
+    <div>
         <h1>Ultracam alpha</h1><br>
         processed images: {{processed}}<br>
         skipped images: {{skipped}}<br>
@@ -27,19 +27,16 @@
         framebuffer size: {{size}} mb<br>
     </div>
 
+    <div class="row row-cols-1 row-cols-md-2 no-gutters">
     {% for k, v in images.items() %}
-
-      {% if loop.index0%2 == 0 %}
-      <div class="row">
-       {% endif %}
-        <div class="col-6">
-            <p>{{k}}: </p><br>
-            <a href="/video/{{k}}"><img src="/snapshot/{{k}}" class="img-fluid" /></a>
+        <div class="col">
+            <div class="p-1 m-1 border">
+                    <p>{{k}}: </p>
+                    <a href="/video/{{k}}"><img src="/snapshot/{{k}}" class="img-fluid" /></a>
+                </div>
         </div>
-        {% if loop.index0%2 == 1 %}
-        </div>
-        {% endif %}
     {% endfor %}
+     </div>
     </div>
 
     <!-- Optional JavaScript -->

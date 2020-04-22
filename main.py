@@ -72,6 +72,9 @@ def init_processnamehack():
 
 if __name__ == "__main__":
     shared.logger.info('Ultracam startup')
+    nice = os.nice(5)
+    shared.logger.info('nice level: {}'.format(nice))
+
     init_processnamehack()
 
     for stream in shared.config['streams']:

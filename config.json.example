@@ -1,0 +1,47 @@
+{
+ "streams": [
+  {
+   "label": "road",
+   "url": "rtsp://admin:password@192.168.1.1:554/Streaming/Channels/1",
+   "detect_in_polygon": [
+    [
+     0,
+     450
+    ],
+    [
+     900,
+     250
+    ],
+    [
+     1050,
+     0
+    ],
+    [
+     1280,
+     0
+    ],
+    [
+     1280,
+     720
+    ],
+    [
+     0,
+     720
+    ]
+   ],
+   "ignore": []
+  },
+  {
+   "label": "walkway",
+   "url": "rtsp://admin:password@192.168.1.1:554/Streaming/Channels/1",
+   "ignore": []
+  },
+  {
+   "label": "test",
+   "url": "rtsp://admin:password@192.168.1.1:554/Streaming/Channels/1",
+   "ignore": []
+  }
+ ],
+ "tg_token": "TG_TOKEN",
+ "tg_chat": CHAT_ID
+}

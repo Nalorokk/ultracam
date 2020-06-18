@@ -14,7 +14,7 @@ import shared
 from pprint import pprint
 
 classes = None
-allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant', 'train', 'bus', 'bowl', 'cup']
+allowed = ['car', 'bicycle', 'dog', 'motorbike', 'umbrella', 'boat', 'pottedplant', 'fire hydrant', 'train', 'bus', 'bowl', 'cup', 'frisbee']
 
 with open(shared.args.classes, 'r') as f:
     classes = [line.strip() for line in f.readlines()]
@@ -77,7 +77,7 @@ def perform_alarm(name, image, alarm, silent):
     else:
         caption = 'type: alarm\n' + caption
 
-    msgId = -330196658
+    msgId = shared.config['tg_chat']
     try:
     	bot.send_photo(chat_id=msgId, photo=open(path, 'rb'), caption = caption, disable_notification = silent)
 

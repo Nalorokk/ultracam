@@ -13,5 +13,6 @@ cfg/yolov3.weights
 config.json
 
 *.jpg
+!screenshot.jpg
 
 venv/

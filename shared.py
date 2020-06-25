@@ -6,6 +6,8 @@ from sys import getsizeof, stderr
 from itertools import chain
 from collections import deque
 
+import utils
+
 #import psutil as psutil
 
 try:
@@ -64,6 +66,8 @@ framebuffer = {}
 stats = {}
 frame_stats = {}
 
+stopStreams = False
+
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-d', '--debug', required=False, help = 'path to input image')
@@ -74,10 +78,16 @@ ap.add_argument('-cl', '--classes', required=False, help = 'path to text file co
 ap.add_argument('-ic', '--invertcolor', required=False, help = 'invert RGB 2 BGR',  default = 'false')
 args = ap.parse_args()
 
-
-with open('config.json') as f:
-    config = json.load(f)
-
+if(os.path.exists('config.json')):
+    with open('config.json') as f:
+        try:
+            config = json.load(f)
+        except:
+            config = {}
+            config['streams'] = []
+else:
+    config = {}
+    config['streams'] = []
 
 logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 logger = logging.getLogger()

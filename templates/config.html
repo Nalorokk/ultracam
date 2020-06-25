@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+          <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+      <script>
+              $( document ).ready(function() {
+                  function updateDelete() {
+                      $('.delete').off('click').click(function (e) {
+                            e.preventDefault();
+                            console.log('delete');
+                            $(this).parent().remove();
+                      });
+                  }
+
+                    $.getJSON( "/config.json", function( data ) {
+                        $('#tg_token').val(data.tg_token);
+                        $('#tg_chat').val(data.tg_chat);
+
+                        $.each(data.streams, function (key, item) {
+                                $('  <li class="list-group-item" label="'+item.label+'" url="'+item.url+'">'+item.label+' - '+item.url+' <a href="#" class="delete">Delete</a></li>').appendTo('#streams');
+
+                        });
+
+                        updateDelete();
+                    });
+
+                    $('#btn_Add').click(function (e) {
+                            let label = $('#label').val();
+                            let url = $('#url').val();
+
+                            if(label.length > 0 && url.length > 0) {
+                                $('  <li class="list-group-item" label="' + label + '" url="' + url + '">' + label + ' - ' + url + ' <a href="#" class="delete">Delete</a></li>').appendTo('#streams');
+                            } else {
+                                alert('Both url and label should be filled');
+                            }
+                    });
+
+                    $('#btn_Save').click(function (e) {
+                            e.preventDefault();
+
+                            let config = {};
+                            config['tg_token'] =  $('#tg_token').val();
+                            config['tg_chat'] =  $('#tg_chat').val();
+
+                            config['streams'] = [];
+
+                            $('ul li').each(function () {
+                                config['streams'].push({label: $(this).attr('label'), url: $(this).attr('url'), ignore: []});
+                            });
+
+                            console.log('export json: ', config);
+
+
+                            $.ajax({
+                                contentType: 'application/json',
+                                data: JSON.stringify(config),
+                                dataType: 'json',
+                                success: function(data){
+                                    console.log('result data: '+data);
+                                    alert('Settings saved');
+                                },
+                                error: function(){
+                                },
+                                processData: false,
+                                type: 'POST',
+                                url: '/config.save'
+                            });
+                    });
+            });
+      </script>
+    <title>Ultracam</title>
+  </head>
+  <body>
+
+
+    <div class="container">
+                <h1>Ultracam alpha - Confuguration</h1><br>
+        <a href="/">Main page</a><br>
+          <div class="form-group">
+                <label for="tg_token">Telegram API Token: </label>
+                <input type="text" class="form-control" id="tg_token">
+          </div>
+        <div class="form-group">
+                <label for="tg_chat">Telegram chat ID:  </label>
+                <input type="text" class="form-control" id="tg_chat">
+          </div>
+        <p style="color: red">Both fields required</p>
+
+            <p>RTSP Streams:</p>
+        <ul class="list-group" id="streams">
+
+        </ul>
+
+        <div class="form-group">
+                <label for="label">Add stream: </label>
+                    <div class="row">
+                <div class="col">
+                 <input type="text" class="form-control" id="label" placeholder="Walkway">
+                </div>
+                    <div class="col">
+                    <input type="text" class="form-control" id="url" placeholder="rtsp://....">
+                    </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="btn_Add">Add stream</button><br>
+                        </div>
+            </div>
+          </div>
+
+
+
+        <button type="button" class="btn btn-primary" id="btn_Save">Save</button>
+    </div>
+
+  </body>
+</html>
+
+

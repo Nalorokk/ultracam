@@ -5,8 +5,13 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from sanic import Sanic, response
 from sanic.response import json, html
 import cv2
+import tg
+import json
 
+import main
+from utils import zero_division
 import shared
+from threading import Timer
 
 
 # define the environment for the Jinja2 templates
@@ -32,13 +37,40 @@ async def mainList(request):
     for (k, v) in shared.framebuffer.items():
         if "_"  not in k:
             filtered[k] = v
-    return template('index.html', images = filtered, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = shared.get_counter('images_time') / shared.get_counter('images_processed'), skip_avg = shared.get_counter('skipped_time') / shared.get_counter('images_skipped'), diff_avg = shared.get_counter('total_skip_diff') / shared.get_counter('images_skipped'), diff_avg2 = shared.get_counter('total_diff') / shared.get_counter('total_processed'), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
+    return template('index.html', images = filtered, processed = shared.get_counter('images_processed'), skipped = shared.get_counter('images_skipped'), avg = zero_division(shared.get_counter('images_time'),shared.get_counter('images_processed')), skip_avg = zero_division(shared.get_counter('skipped_time'), shared.get_counter('images_skipped')), diff_avg = zero_division(shared.get_counter('total_skip_diff'), shared.get_counter('images_skipped')), diff_avg2 = zero_division(shared.get_counter('total_diff') , shared.get_counter('total_processed')), total = shared.get_counter('images_time'), stream_resets = shared.get_counter('stream_resets'), size = shared.get_size())
 
 @app.route("/video/<tag>")
 async def mainList(request, tag):
     return template('video.html', tag = tag)
 
+@app.route("/config")
+async def mainList(request):
+    return template('config.html')
 
+
+@app.route("/config.json")
+async def mainList(request):
+    return response.json(shared.config);
+
+@app.post("/config.save")
+async def mainList(request):
+    bb = request.json
+    pprint.pprint(bb);
+    shared.config = bb;
+
+    shared.stopStreams = True;
+
+    timer = Timer(5, main.loadStreams)
+    timer.start()
+
+    shared.framebuffer = {}
+
+    tg.initBot()
+
+    with open('config.json', 'w') as file:
+        file.write(json.dumps(shared.config))
+
+    return response.json(bb);
 
 @app.route('/snapshot/<tag>')
 async def tag_handler(request, tag):

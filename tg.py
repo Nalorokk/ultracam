@@ -3,8 +3,16 @@ import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import shared
 
+bot = None
 
-bot = telegram.Bot(token=shared.config['tg_token'])
+
+def initBot():
+    global bot
+    if 'tg_token' in shared.config:
+        bot = telegram.Bot(token=shared.config['tg_token'])
+
+initBot()
+
 
 def echo(bot, update):
     """Echo the user message."""

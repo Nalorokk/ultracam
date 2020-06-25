@@ -77,12 +77,12 @@ def perform_alarm(name, image, alarm, silent):
     else:
         caption = 'type: alarm\n' + caption
 
-    msgId = shared.config['tg_chat']
-    try:
-    	bot.send_photo(chat_id=msgId, photo=open(path, 'rb'), caption = caption, disable_notification = silent)
-
-    except:
-    	shared.logger.debug('Telegram error happened')
+    if 'tg_chat' in shared.config:
+        msgId = shared.config['tg_chat']
+        try:
+            bot.send_photo(chat_id=msgId, photo=open(path, 'rb'), caption = caption, disable_notification = silent)
+        except:
+            shared.logger.debug('Telegram error happened')
 
 
 def get_image_difference(image_1, image_2):

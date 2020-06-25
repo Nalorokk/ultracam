@@ -21,13 +21,16 @@ import opencv
 
 
 def processStream(name, url):
-    shared.logger.debug('processStream thread started')
+    shared.logger.debug('processStream thread started: '+name)
 
     if(shared.args.debug is None):
         counter = 0
         err = 0
         cap = cv2.VideoCapture(url)
         while True:
+            if(shared.stopStreams):
+                shared.logger.debug('Exiting thread name: '+name);
+                break
             ret, frame = cap.read()
             if(ret):
                 counter = counter + 1
@@ -70,6 +73,13 @@ def init_processnamehack():
         threading.Thread._bootstrap = _name_hack
 
 
+
+def loadStreams():
+    shared.stopStreams = False
+    for stream in shared.config['streams']:
+        threading.Thread(target=processStream, name=stream['label'], args=(stream['label'], stream['url'],), daemon=True).start()
+
+
 if __name__ == "__main__":
     shared.logger.info('Ultracam startup')
     nice = os.nice(5)
@@ -77,8 +87,8 @@ if __name__ == "__main__":
 
     init_processnamehack()
 
-    for stream in shared.config['streams']:
-        threading.Thread(target=processStream, name=stream['label'], args=(stream['label'], stream['url'],), daemon=True).start()
+    loadStreams()
+
     
     threading.Thread(target=opencv.processFrame, name="opencv", daemon=True).start()
     #tg.begin()
